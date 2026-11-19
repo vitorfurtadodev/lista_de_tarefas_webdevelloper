@@ -1,0 +1,182 @@
+/* 1. Base dimensional e reset: evita diferenças entre navegadores e estouros de largura. */
+*, *::before, *::after { box-sizing: border-box; }
+html { min-width: 320px; scroll-behavior: smooth; }
+body { margin: 0; min-height: 100dvh; }
+button, input, select, textarea { font: inherit; }
+button, select { cursor: pointer; }
+button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+button, input, select, textarea { max-width: 100%; }
+button svg, [data-icon] svg { display: block; width: 18px; height: 18px; flex-shrink: 0; }
+button { touch-action: manipulation; }
+input, select, textarea { width: 100%; min-width: 0; }
+textarea { resize: vertical; }
+h1, h2, h3, p { margin: 0; }
+[hidden] { display: none !important; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.skip-link { position: fixed; left: 16px; top: -80px; z-index: 600; padding: 12px; }
+.skip-link:focus { top: 10px; }
+
+/* 2. Estrutura principal: navegação fixa e conteúdo fluido, sem alturas rígidas. */
+.sidebar { position: fixed; inset: 0 auto 0 0; z-index: 100; width: 240px; padding: 35px 20px 16px; display: flex; flex-direction: column; overflow-y: auto; }
+.app-shell { margin-left: 240px; min-width: 0; }
+.topbar { min-height: 76px; padding: 16px 42px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.breadcrumb, .topbar-meta { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.breadcrumb strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.topbar-meta { flex-shrink: 0; }
+main { padding: 38px 42px 22px; max-width: 1600px; margin: auto; }
+.page-heading { display: flex; align-items: center; justify-content: space-between; gap: 24px; margin-bottom: 35px; }
+.page-heading > div { min-width: 0; }
+.page-heading > button { flex-shrink: 0; }
+.metrics { display: grid; grid-template-columns: 1fr 1fr 1fr 1.15fr; margin-bottom: 34px; }
+.metric { min-width: 0; padding: 23px 24px; display: flex; flex-direction: column; }
+.metric:first-child { padding-left: 0; }
+.metric:last-child { padding-right: 0; }
+.metric strong { margin: 8px 0 3px; }
+.progress-metric { justify-content: center; }
+.progress-heading { display: flex; justify-content: space-between; gap: 8px; }
+.progress-metric progress { width: 100%; margin: 21px 0 15px; }
+.board-toolbar, .filter-bar, .results-line { display: flex; align-items: center; gap: 12px; }
+.board-toolbar { justify-content: space-between; min-height: 49px; margin-bottom: 18px; }
+.view-switch { display: inline-flex; flex-shrink: 0; }
+.board-tip { margin-left: auto; display: inline-flex; align-items: center; gap: 8px; }
+.filter-bar .search-field { flex: 1; min-width: 160px; }
+.select-filter { flex: 0 1 164px; min-width: 135px; }
+.results-line { justify-content: space-between; margin: 23px 0 16px; }
+.priority-legend { display: flex; align-items: center; gap: 7px; }
+.task-board { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: start; }
+/* Quando o filtro contém menos etapas, as colunas usam toda a largura disponível. */
+.task-board.single-status { grid-template-columns: minmax(0, 1fr); }
+.task-board.active-status { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.column { min-width: 0; min-height: 310px; }
+.column-header { display: flex; align-items: center; gap: 9px; padding: 15px 0; margin-bottom: 16px; }
+.column-header .icon-button { margin: -8px -8px -8px auto; }
+.column-tasks { display: flex; flex-direction: column; gap: 12px; min-height: 125px; }
+.task-card { position: relative; min-width: 0; padding: 18px; }
+.card-top, .card-bottom { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.card-content { display: block; width: 100%; text-align: left; padding: 0; margin: 14px 0; }
+.card-actions { display: flex; gap: 2px; }
+.card-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.column-add { margin-top: 12px; width: 100%; padding: 13px; }
+.main-footer { display: flex; justify-content: space-between; gap: 16px; padding-top: 30px; margin-top: 32px; }
+.main-footer > span:first-child { display: inline-flex; align-items: center; gap: 7px; }
+
+/* 3. Navegação e barra inferior: o fim da sidebar acompanha a altura disponível. */
+.brand { display: flex; align-items: center; gap: 10px; margin: 0 12px 36px; }
+.workspace { display: flex; align-items: center; gap: 11px; margin: 0 4px 35px; padding: 12px 8px; }
+.workspace .local-dot { margin-left: auto; }
+.workspace small { display: block; margin-top: 4px; }
+.sidebar-label { margin: 0 12px 12px; }
+.nav-item { display: flex; width: 100%; justify-content: flex-start; padding: 12px; margin-bottom: 4px; min-height: 43px; text-align: left; }
+.nav-item .nav-count { margin-left: auto; }
+.section-heading { display: flex; align-items: center; justify-content: space-between; padding: 22px 5px 8px 12px; }
+.sidebar-hint { padding: 10px 12px; }
+.panel-row { display: flex; align-items: center; min-width: 0; }
+.panel-row .nav-item { min-width: 0; flex: 1; }
+.panel-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.panel-row > button:last-child { flex-shrink: 0; }
+.sidebar-bottom { margin-top: auto; padding-top: 35px; }
+.mini-note { position: relative; padding: 17px 12px 28px; margin-bottom: 17px; overflow: hidden; }
+.theme-button { margin-top: 12px; padding-top: 18px; padding-bottom: 18px; }
+.theme-switch { margin-left: auto; flex-shrink: 0; }
+.sidebar-footer { display: flex; align-items: center; gap: 6px; padding: 12px 5px 0; }
+.sidebar-footer > span:last-child { margin-left: auto; }
+.menu-toggle, .nav-backdrop { display: none; }
+
+/* 4. Modais: editor lateral com rolagem interna e ações sempre acessíveis. */
+dialog { position: fixed; z-index: 300; padding: 0; }
+.editor-dialog { inset: 0 0 0 auto; margin: 0; width: min(560px, 100%); height: 100dvh; max-height: 100dvh; max-width: 100%; }
+.editor-dialog form { height: 100%; display: flex; flex-direction: column; }
+.editor-header { display: flex; justify-content: space-between; align-items: center; gap: 20px; padding: 28px; flex-shrink: 0; }
+.editor-body { overflow-y: auto; padding: 28px; flex: 1; }
+.editor-footer { display: flex; justify-content: flex-end; align-items: center; gap: 10px; padding: 20px 28px; flex-shrink: 0; }
+.editor-footer .danger { margin-right: auto; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px 16px; margin: 27px 0; }
+.field-label { display: block; }
+.field-meta, .description-heading { display: flex; justify-content: space-between; gap: 12px; }
+.field-meta { min-height: 26px; margin-top: 7px; }
+.description-heading { align-items: center; margin-bottom: 10px; }
+.format-toolbar { display: flex; align-items: center; padding: 5px 8px; gap: 2px; }
+.text-editor textarea { display: block; }
+.action-dialog { width: min(450px, calc(100% - 32px)); margin: auto; max-height: calc(100dvh - 32px); overflow-y: auto; padding: 30px; }
+.action-buttons { display: flex; justify-content: flex-end; gap: 10px; margin-top: 25px; }
+.toast-region { position: fixed; bottom: 24px; left: calc(50% + 120px); transform: translateX(-50%); width: max-content; max-width: min(520px, calc(100% - 32px)); z-index: 500; }
+
+/* 5. Visualização em lista: reaproveita os mesmos cartões e ações do quadro. */
+.task-board.list-view { display: flex; flex-direction: column; gap: 8px; }
+.list-view .task-card { width: 100%; display: grid; grid-template-columns: 145px 1fr 190px; gap: 16px; align-items: center; }
+.list-view .card-content { margin: 0; }
+.list-view .card-bottom { justify-content: flex-end; }
+.list-view .card-status { display: block; margin-top: 10px; }
+
+/* 6. Tablets: reduz margens sem apertar os alvos de interação. */
+@media (max-width: 1180px) {
+  .sidebar { width: 218px; padding-left: 14px; padding-right: 14px; }
+  .app-shell { margin-left: 218px; }
+  .topbar { padding-inline: 26px; }
+  main { padding: 30px 26px 20px; }
+  .metric { padding-inline: 16px; }
+  .metric .eyebrow { font-size: 10px; }
+  .metric-caption { font-size: 11px; }
+  .task-board { gap: 14px; }
+  .task-card { padding: 14px; }
+  .filter-bar { flex-wrap: wrap; }
+  .filter-bar .search-field { flex-basis: 100%; }
+  .select-filter { flex: 1; }
+  .board-tip { display: none; }
+  .list-view .task-card { grid-template-columns: 115px 1fr; }
+  .list-view .card-bottom { grid-column: 2; }
+  .toast-region { left: calc(50% + 109px); }
+}
+
+/* 7. Celulares: menu recolhível, colunas empilhadas e feedback sem overflow. */
+@media (max-width: 800px) {
+  .sidebar { transform: translateX(-100%); width: 260px; transition: transform 220ms ease-out; }
+  body.nav-open .sidebar { transform: translateX(0); }
+  body.nav-open { overflow: hidden; }
+  .nav-backdrop { display: block; position: fixed; inset: 0; z-index: 90; border: 0; }
+  .app-shell { margin-left: 0; }
+  .menu-toggle { display: inline-flex; flex-shrink: 0; }
+  .topbar { min-height: 66px; padding: 12px 20px; }
+  .topbar-meta > span:first-child { display: none; }
+  main { padding: 28px 20px 18px; }
+  .metrics { margin-bottom: 25px; }
+  .metric { padding: 18px 12px; }
+  .page-heading { margin-bottom: 25px; }
+  .page-heading .button kbd { display: none; }
+  .toast-region { left: 50%; bottom: 16px; }
+}
+@media (max-width: 600px) {
+  .page-heading { flex-direction: column; align-items: stretch; gap: 22px; }
+  .page-heading > button { align-self: flex-start; }
+  .metrics { grid-template-columns: 1fr 1fr; }
+  .metric { padding: 18px 16px; }
+  .metric:nth-child(odd) { padding-left: 0; }
+  .metric:nth-child(even) { padding-right: 0; }
+  .metric:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
+  .metric:nth-child(3) { border-left: 0; }
+  .task-board, .task-board.active-status { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .column { min-height: 0; }
+  .select-filter { min-width: 0; flex-basis: calc(50% - 10px); }
+  .filter-bar .select-filter:nth-of-type(4) { flex-basis: calc(100% - 60px); }
+  .priority-legend { font-size: 11px; }
+  .results-line { align-items: flex-start; flex-direction: column; gap: 12px; }
+  .board-toolbar .text-button { font-size: 12px; }
+  .board-toolbar { gap: 6px; }
+  /* Ações móveis têm áreas de toque maiores, inclusive nos cartões. */
+  .menu-toggle { width: 44px; min-height: 44px; }
+  .card-actions .icon-button { width: 36px; min-height: 36px; }
+  .card-actions .complete-button { width: 32px; min-height: 32px; }
+  .card-top .icon-button { width: 34px; min-height: 34px; }
+  .view-button { padding-inline: 10px; }
+  .main-footer { flex-direction: column; gap: 12px; }
+  .editor-header, .editor-body { padding: 23px 20px; }
+  .editor-footer { padding: 16px 20px; }
+  .list-view .task-card { grid-template-columns: 1fr; gap: 12px; }
+  .list-view .card-bottom { grid-column: auto; justify-content: space-between; }
+  .list-view .card-status { display: inline; margin-left: 10px; }
+}
+
+/* 8. Preferência de acessibilidade: animações deixam de interferir na navegação. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}

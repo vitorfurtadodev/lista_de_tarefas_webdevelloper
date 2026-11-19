@@ -1,0 +1,107 @@
+<!doctype html>
+<!-- Estrutura semântica da aplicação. Os scripts clássicos também funcionam por file://. -->
+<html lang="pt-BR" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="Ordem: tarefas, prioridades e painéis em um só lugar, diretamente no navegador.">
+  <title>Ordem — Seu trabalho, em perspectiva</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' fill='%23252624'/%3E%3Cpath d='M10 11h20v5H10zm0 8h14v5H10zm0 8h8v5h-8z' fill='%23f5f1e8'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!-- A ordem garante que persistência e interface existam antes do controlador. -->
+  <script src="js/storage.js" defer></script>
+  <script src="js/ui.js" defer></script>
+  <script src="js/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Pular para o painel</a>
+  <!-- Navegação lateral: visões gerais, filtros salvos e ações locais. -->
+  <aside class="sidebar" id="sidebar" aria-label="Navegação principal">
+    <a class="brand" href="#main" aria-label="Ordem, início"><span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>ordem<span class="brand-period">.</span></a>
+    <div class="workspace"><span class="workspace-avatar">V</span><div>Meu espaço<small>Workspace pessoal</small></div><span class="local-dot" title="Aplicação local"></span></div>
+    <p class="eyebrow sidebar-label">VISÃO GERAL</p>
+    <nav class="main-nav" aria-label="Visões de tarefas">
+      <button class="nav-item active" data-preset="all" aria-current="page"><span data-icon="board"></span> Todas as tarefas <span class="nav-count" id="count-all">0</span></button>
+      <button class="nav-item" data-preset="active"><span data-icon="circle"></span> Pendentes <span class="nav-count" id="count-active">0</span></button>
+      <button class="nav-item" data-preset="done"><span data-icon="check-circle"></span> Concluídas <span class="nav-count" id="count-done">0</span></button>
+    </nav>
+    <div class="section-heading"><p class="eyebrow">MEUS PAINÉIS</p><button class="icon-button" data-action="save-panel" aria-label="Criar painel com os filtros atuais" title="Salvar filtros em um painel"><span data-icon="plus"></span></button></div>
+    <nav id="panel-nav" aria-label="Painéis personalizados"></nav>
+    <p class="sidebar-hint" id="panel-hint">Seu jeito de organizar.<br>Filtre e salve um painel.</p>
+    <div class="sidebar-bottom">
+      <div class="mini-note"><span class="eyebrow">MENOS RUÍDO. MAIS FOCO.</span><p>Uma tarefa de cada vez.</p><span class="note-lines" aria-hidden="true"></span></div>
+      <button class="nav-item" id="demo-button" data-action="demo"><span data-icon="spark"></span> Explorar um exemplo</button>
+      <button class="nav-item" data-action="export"><span data-icon="download"></span> Exportar backup</button>
+      <label class="nav-item import-label"><span data-icon="upload"></span> Importar backup<input type="file" id="import-file" accept=".json,application/json" class="sr-only"></label>
+      <button class="nav-item theme-button" data-action="theme"><span id="theme-icon" data-icon="moon"></span><span id="theme-label">Modo escuro</span><span class="theme-switch" aria-hidden="true"></span></button>
+      <div class="sidebar-footer"><span class="local-dot"></span> Feito para o seu ritmo <span>v1.0</span></div>
+    </div>
+  </aside>
+  <button class="nav-backdrop" id="nav-backdrop" aria-label="Fechar navegação" hidden></button>
+
+  <!-- Área de trabalho: filtros, métricas e painel Kanban ou lista. -->
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="breadcrumb"><button class="icon-button menu-toggle" id="menu-toggle" aria-label="Abrir navegação" aria-controls="sidebar" aria-expanded="false"><span data-icon="menu"></span></button><span>Meu espaço</span><span class="breadcrumb-slash">/</span><strong id="breadcrumb-title">Todas as tarefas</strong></div>
+      <div class="topbar-meta"><span id="today-label"></span><span class="user-avatar" aria-label="Espaço pessoal">V</span></div>
+    </header>
+    <main id="main" tabindex="-1">
+      <div id="storage-warning" class="warning-banner" role="alert" hidden></div>
+      <section class="page-heading" aria-labelledby="page-title">
+        <div><div class="edition eyebrow"><span class="edition-line"></span> SEU TRABALHO, EM PERSPECTIVA</div><h1 id="page-title">Todas as tarefas<span class="title-dot">.</span></h1><p id="page-description">Organize as ideias. Defina o próximo passo. Faça acontecer.</p></div>
+        <button class="button button-primary" data-action="new"><span data-icon="plus"></span> Nova tarefa <kbd>N</kbd></button>
+      </section>
+      <!-- Contadores globais, independentes dos filtros aplicados ao quadro. -->
+      <section class="metrics" aria-label="Resumo de todas as tarefas">
+        <div class="metric"><span class="eyebrow">TOTAL DE TAREFAS</span><strong id="metric-total">00</strong><span class="metric-caption">Tudo no seu radar</span></div>
+        <div class="metric"><span class="eyebrow"><i class="status-dot doing"></i> EM ANDAMENTO</span><strong id="metric-doing">00</strong><span class="metric-caption">Um passo mais perto</span></div>
+        <div class="metric"><span class="eyebrow"><i class="status-dot done"></i> CONCLUÍDAS</span><strong id="metric-done">00</strong><span class="metric-caption">Pequenas grandes conquistas</span></div>
+        <div class="metric progress-metric"><div class="progress-heading"><span class="eyebrow">SEU PROGRESSO</span><span id="progress-label">0%</span></div><progress id="progress" max="100" value="0" aria-label="Percentual de tarefas concluídas">0%</progress><span class="metric-caption" id="progress-caption">Cada começo conta.</span></div>
+      </section>
+      <section class="task-workspace" aria-label="Tarefas e filtros">
+        <div class="board-toolbar"><div class="view-switch" role="group" aria-label="Visualização"><button class="view-button selected" data-view="board" aria-pressed="true"><span data-icon="board"></span> Quadro</button><button class="view-button" data-view="list" aria-pressed="false"><span data-icon="list"></span> Lista</button></div><span class="board-tip"><span data-icon="move"></span> Arraste para mudar de etapa</span><button class="text-button" data-action="save-panel"><span data-icon="filter"></span> Salvar painel</button></div>
+        <div class="filter-bar">
+          <label class="search-field"><span data-icon="search"></span><span class="sr-only">Buscar tarefas</span><input id="search" type="search" placeholder="Buscar uma tarefa…" maxlength="120" autocomplete="off"><kbd>/</kbd></label>
+          <label class="select-filter"><span class="sr-only">Filtrar por status</span><select id="status-filter"><option value="all">Todos os status</option><option value="todo">A fazer</option><option value="doing">Em andamento</option><option value="done">Concluídas</option><option value="active">Pendentes</option></select></label>
+          <label class="select-filter"><span class="sr-only">Filtrar por prioridade</span><select id="priority-filter"><option value="all">Toda prioridade</option><option value="high">Alta prioridade</option><option value="medium">Média prioridade</option><option value="low">Baixa prioridade</option></select></label>
+          <label class="select-filter"><span class="sr-only">Filtrar por área</span><select id="area-filter"><option value="all">Todas as áreas</option><option value="Geral">Geral</option><option value="Trabalho">Trabalho</option><option value="Estudos">Estudos</option><option value="Pessoal">Pessoal</option></select></label>
+          <button class="icon-button" data-action="clear-filters" aria-label="Limpar filtros" title="Limpar filtros"><span data-icon="reset"></span></button>
+        </div>
+        <div class="results-line"><span id="result-count" role="status" aria-live="polite">0 tarefas neste painel</span><span class="priority-legend"><i class="priority-dot high"></i> Alta <i class="priority-dot medium"></i> Média <i class="priority-dot low"></i> Baixa</span></div>
+        <div id="task-board" class="task-board"></div>
+        <div id="no-results" class="no-results" hidden><span data-icon="search"></span><h2>Nada por aqui. Ainda.</h2><p>Tente outra busca ou ajuste os filtros do painel.</p><button class="button button-secondary" data-action="clear-filters">Limpar filtros</button></div>
+      </section>
+      <footer class="main-footer"><span><span data-icon="shield"></span> <span id="save-state">Seus dados ficam neste navegador</span></span><span>ESPAÇO PARA O QUE IMPORTA.</span></footer>
+    </main>
+  </div>
+
+  <!-- Dialog nativo prende o foco; o conteúdo ocupa uma barra lateral de edição. -->
+  <dialog id="task-dialog" class="editor-dialog" aria-labelledby="editor-heading">
+    <form id="task-form" novalidate>
+      <header class="editor-header"><div><span class="eyebrow" id="editor-kicker">TIRE A IDEIA DO PAPEL</span><h2 id="editor-heading">Nova tarefa</h2></div><button type="button" class="icon-button" data-action="close-editor" aria-label="Fechar editor"><span data-icon="close"></span></button></header>
+      <div class="editor-body">
+        <input type="hidden" id="task-id">
+        <label class="field-label" for="task-title">O que precisa ser feito? <span aria-hidden="true">*</span></label>
+        <input id="task-title" name="title" class="title-input" placeholder="Dê um nome à sua próxima conquista" maxlength="120" required aria-describedby="title-error title-hint" autocomplete="off">
+        <div class="field-meta"><span id="title-error" class="field-error" role="alert"></span><span id="title-hint">0 / 120</span></div>
+        <div class="form-grid"><label class="field-label">Status<select id="task-status"><option value="todo">A fazer</option><option value="doing">Em andamento</option><option value="done">Concluída</option></select></label><label class="field-label">Prioridade<select id="task-priority"><option value="low">Baixa</option><option value="medium" selected>Média</option><option value="high">Alta</option></select></label><label class="field-label">Área<select id="task-area"><option>Geral</option><option>Trabalho</option><option>Estudos</option><option>Pessoal</option></select></label><label class="field-label">Prazo <span class="optional">opcional</span><input type="date" id="task-due" min="1900-01-01" max="9999-12-31"></label></div>
+        <!-- Formatação por marcações com prévia segura, sem interpretar HTML do usuário. -->
+        <div class="description-heading"><label class="field-label" for="task-description">Descrição <span class="optional">opcional</span></label><span id="description-counter">0 / 5000</span></div>
+        <div class="text-editor"><div class="format-toolbar" role="toolbar" aria-label="Formatar descrição"><button type="button" data-format="bold" title="Negrito (Ctrl+B)" aria-label="Negrito"><b>B</b></button><button type="button" data-format="italic" title="Itálico (Ctrl+I)" aria-label="Itálico"><i>I</i></button><button type="button" data-format="underline" title="Sublinhado (Ctrl+U)" aria-label="Sublinhado"><u>U</u></button><button type="button" data-format="strike" title="Tachado" aria-label="Tachado"><s>S</s></button><span class="toolbar-divider"></span><button type="button" data-format="list" title="Lista" aria-label="Lista com marcadores"><span data-icon="list"></span></button></div><textarea id="task-description" rows="7" maxlength="5000" placeholder="Detalhes, ideias e os próximos passos…" aria-describedby="format-hint"></textarea></div>
+        <p class="input-hint" id="format-hint">Selecione um trecho e use a barra para formatar. A prévia aparece abaixo.</p>
+        <div class="preview-label eyebrow">PRÉVIA DA DESCRIÇÃO</div><div class="description-preview rich-text" id="description-preview"></div>
+        <p class="editor-date" id="editor-date"></p>
+      </div>
+      <footer class="editor-footer"><button type="button" class="icon-button danger" id="editor-delete" data-action="delete-editing" aria-label="Excluir tarefa" hidden><span data-icon="trash"></span></button><button type="button" class="button button-secondary" data-action="close-editor">Cancelar</button><button type="submit" class="button button-primary" id="save-task"><span data-icon="check"></span> Salvar tarefa</button></footer>
+    </form>
+  </dialog>
+
+  <!-- Um modal reutilizável permite confirmar exclusões e nomear painéis. -->
+  <dialog id="action-dialog" class="action-dialog" aria-labelledby="action-title"><form id="action-form" novalidate><span class="eyebrow" id="action-kicker">MEU ESPAÇO</span><h2 id="action-title">Salvar painel</h2><p id="action-description"></p><label class="field-label" id="action-label" for="action-input">Nome do painel</label><input id="action-input" maxlength="40" autocomplete="off"><p id="action-error" class="field-error" role="alert"></p><div class="action-buttons"><button type="button" class="button button-secondary" id="action-cancel">Cancelar</button><button type="submit" class="button button-primary" id="action-confirm">Salvar painel</button></div></form></dialog>
+  <!-- Avisos acessíveis e persistência alternativa quando localStorage falha. -->
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite" aria-atomic="true"></div>
+  <noscript><div class="noscript-message">Ative o JavaScript no navegador para gerenciar suas tarefas.</div></noscript>
+</body>
+</html>
